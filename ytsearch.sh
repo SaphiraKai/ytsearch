@@ -1,7 +1,5 @@
 #!/bin/bash
 
-fzf_options=('--bind' 'change:execute-silent(ytsearch scrape {q})')
-
 set -euo pipefail
 IFS=$'\t\n'
 
@@ -26,7 +24,11 @@ sleep infinity > /tmp/ytsearch.fifo &
 sleep_pid=$!
 
 #? open the fzf-based interface
-fzf ${fzf_options[@]}  < /tmp/ytsearch.fifo
+fzf_options=('--prompt' 'youtube search: '
+             '--reverse'
+             '--bind' 'change:execute-silent(ytsearch new_query {q} &)'
+             '--bind' 'change:+reload(cat /tmp/ytsearch-titles)')
+: | fzf ${fzf_options[@]}
 
 kill $sleep_pid
 rm /tmp/ytsearch.fifo
