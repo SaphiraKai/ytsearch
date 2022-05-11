@@ -4,20 +4,33 @@ encoded="$(echo $search | sed 's/ /+/g')"
 
 IFS=$'\n'
 
-get_listing () {
-	sed -e 's/,/\n/' -e 's/;/\n/' |\
-	grep -oP '"title":{"runs":\[{"text":".*?"}]'
+extract_json () {
+	grep -oP 'var ytInitialData = \K{.*}' | jq 2>/dev/null
 }
 
-trim_nonresults () {
-	sed 's/Search options/END-OF-RESULTS/' |\
-	sed '/END-OF-RESULTS/,$ d'
+filter_json () {
+	jq -R 'fromjson? | .'
 }
 
-clean_strings () {
-	sed 's/.*"text":"//' | sed 's/"}]$//'
+parse_json () {
+	jq \
+"[
+  .contents
+  .twoColumnSearchResultsRenderer
+  .primaryContents
+  .sectionListRenderer
+  .contents[0]
+  .itemSectionRenderer
+  .contents[]
+  .videoRenderer | {
+    url: .navigationEndpoint.commandMetadata.webCommandMetadata.url,
+    title: .title.runs[0].text
+    | select( . != null )
+  }
+]"
 }
 
 url="https://www.youtube.com/results?&search_query=$encoded&max_results=20"
 
-echo -e "$(curl $url)"
+echo -e "$(curl -s $url)" | extract_json | parse_json
+
