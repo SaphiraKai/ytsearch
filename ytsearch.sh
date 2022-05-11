@@ -3,6 +3,19 @@
 set -euo pipefail
 IFS=$'\t\n'
 
+get_output () {
+	output=$1
+	title="$2"
+
+	[ $output = title_url ] && {
+		cat /tmp/ytsearch-search_data.json | \
+		jq -r ".[] | select(.title == \"$title\") | "'"\"\(.title)\" \"\(.url)\""'
+	} || {
+		cat /tmp/ytsearch-search_data.json | \
+		jq -r ".[] | select(.title == \"$title\").$output"
+	}
+}
+
 new_query () {
 	search=${1:-}
 	(( ${#search} % 4 == 0 )) && {
@@ -55,12 +68,15 @@ touch /tmp/ytsearch-titles
 fzf_options=('--prompt' 'youtube search: '
              '--reverse'
              '--bind' 'change:execute-silent(ytsearch new_query {q} &)'
-             #'--bind' 'change:+reload(cat /tmp/ytsearch-titles)'
-             )
+             '--bind' 'enter:execute(echo {} > /tmp/ytsearch-selected)'
+             '--bind' 'enter:+abort')
 get_unique_results | fzf ${fzf_options[@]} &
 fzf_pid=$!
 
 while ps -p $fzf_pid >/dev/null; do sleep 0.1; done
 
-rm -f /tmp/ytsearch-search_data.json /tmp/ytsearch-titles
+selected="$(cat /tmp/ytsearch-selected)"
+get_output $output "$selected"
+
+rm -f /tmp/ytsearch-*
 exit 0
