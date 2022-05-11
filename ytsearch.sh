@@ -3,25 +3,30 @@
 set -euo pipefail
 IFS=$'\t\n'
 
-scrape () {
+new_query () {
 	search=${1:-}
 	(( ${#search} % 4 == 0 )) && {
-		ytscrape "$search" >> /tmp/ytsearch.fifo &
+		[ -s /tmp/ytsearch-search_data.json ] || echo '[]' > /tmp/ytsearch-search_data.json
+		search_data="$(cat /tmp/ytsearch-search_data.json)"
+		new_data="$(ytscrape $search)"
+		echo "$search_data" | jq ". += $new_data | unique_by(.title)" > /tmp/ytsearch-search_data.json
 	}
 }
 
-[ "${1:-}" = scrape ] && {
+update_search () {
+	cat /tmp/ytsearch-search_data.json | jq -r '.[].title' > /tmp/ytsearch-titles
+}
+
+output=title
+
+[ "${1:-}" = new_query ] && {
 	shift
-	scrape "$@"
+	new_query "$@"
+	update_search
 	exit
 }
 
-#? create a fifo for the search results
-[ -e /tmp/ytsearch.fifo ] || mkfifo /tmp/ytsearch.fifo
-
-#? keep pipe open
-sleep infinity > /tmp/ytsearch.fifo &
-sleep_pid=$!
+touch /tmp/ytsearch-titles
 
 #? open the fzf-based interface
 fzf_options=('--prompt' 'youtube search: '
@@ -30,5 +35,4 @@ fzf_options=('--prompt' 'youtube search: '
              '--bind' 'change:+reload(cat /tmp/ytsearch-titles)')
 : | fzf ${fzf_options[@]}
 
-kill $sleep_pid
-rm /tmp/ytsearch.fifo
+rm /tmp/ytsearch.fifo /tmp/ytsearch-search_data.json /tmp/ytsearch-titles
