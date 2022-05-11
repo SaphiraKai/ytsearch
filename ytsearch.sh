@@ -1,5 +1,22 @@
 #!/bin/bash
 
+usage="\
+usage: ytsearch [OPTION]
+
+An interactive terminal-based search interface for YouTube
+
+options:
+	-t, --title		return title of selected video
+	-u, --url		return url of selected video
+	-b, --title-url	return \"title\" \"url\" of selected video
+	-o, --open		don't return anything, just open selected video
+					with xdg-open
+
+	-h, --help		this help
+
+If no OPTION, assume --url\
+"
+
 set -euo pipefail
 IFS=$'\t\n'
 
@@ -55,6 +72,7 @@ get_unique_results () {
 
 case "${1:---url}" in
 	-b|--title-url) output=title_url;;
+	-h|--help)      echo "$usage"; exit;;
 	-o|--open)      output=open;;
 	-t|--title)     output=title;;
 	-u|--url)       output=url;;
