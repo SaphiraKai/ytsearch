@@ -19,10 +19,14 @@ get_output () {
 new_query () {
 	search=${1:-}
 	(( ${#search} % 4 == 0 )) && {
-		[ -s /tmp/ytsearch-search_data.json ] || echo '[]' > /tmp/ytsearch-search_data.json
+		[ -s /tmp/ytsearch-search_data.json ] ||\
+		echo '[]' > /tmp/ytsearch-search_data.json
+
 		search_data="$(cat /tmp/ytsearch-search_data.json)"
 		new_data="$(ytscrape $search)"
-		echo "$search_data" | jq ". += $new_data | unique_by(.title)" > /tmp/ytsearch-search_data.json
+
+		echo "$search_data" | jq ". += $new_data | unique_by(.title)" \
+		> /tmp/ytsearch-search_data.json
 	}
 }
 
@@ -47,29 +51,30 @@ get_unique_results () {
 	set -u
 }
 
-output=title
+case "${1:--t}" in
+	-b|--title-url) output=title_url;;
+	-t|--title)     output=title;;
+	-u|--url)       output=url;;
 
-[ "${1:-}" = new_query ] && {
-	shift
-	new_query "$@"
-	update_search
-	exit
-} || [ "${1:-}" = -u ] && {
-	output=url
-} || [ "${1:-}" = -o ] && {
-	output=open
-} || [ "${1:-}" = -t ] && {
-	output=title
-}
+	new_query)
+		shift
+		new_query "$@"
+		update_search
+		exit
+		;;
+
+	*) 2>&1 echo "ytsearch: unrecognized argument '$1'";;
+esac
 
 touch /tmp/ytsearch-titles
 
-#? open the fzf-based interface
-fzf_options=('--prompt' 'youtube search: '
-             '--reverse'
+fzf_options=('--reverse'
+             '--prompt' 'youtube search: '
              '--bind' 'change:execute-silent(ytsearch new_query {q} &)'
              '--bind' 'enter:execute(echo {} > /tmp/ytsearch-selected)'
              '--bind' 'enter:+abort')
+
+#? open the fzf-based interface
 get_unique_results | fzf ${fzf_options[@]} &
 fzf_pid=$!
 
