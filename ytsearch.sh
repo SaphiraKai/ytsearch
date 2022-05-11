@@ -53,7 +53,7 @@ get_unique_results () {
 	set -u
 }
 
-case "${1:--t}" in
+case "${1:---url}" in
 	-b|--title-url) output=title_url;;
 	-o|--open)      output=open;;
 	-t|--title)     output=title;;
