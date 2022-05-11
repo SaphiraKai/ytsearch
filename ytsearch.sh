@@ -101,7 +101,7 @@ fzf_pid=$!
 
 while ps -p $fzf_pid >/dev/null; do sleep 0.1; done
 
-selected="$(cat /tmp/ytsearch-selected)"
+selected="$(cat /tmp/ytsearch-selected 2>/dev/null || exit)"
 get_output $output "$selected"
 
 rm -f /tmp/ytsearch-*
