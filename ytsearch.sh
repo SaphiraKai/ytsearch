@@ -24,11 +24,11 @@ output=title
 	new_query "$@"
 	update_search
 	exit
-} || [ "${1:-}" = -u ] {
+} || [ "${1:-}" = -u ] && {
 	output=url
-} || [ "${1:-}" = -o ] {
+} || [ "${1:-}" = -o ] && {
 	output=open
-} || [ "${1:-}" = -t ] {
+} || [ "${1:-}" = -t ] && {
 	output=title
 }
 
