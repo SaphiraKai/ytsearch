@@ -41,4 +41,4 @@ fzf_options=('--prompt' 'youtube search: '
              '--bind' 'change:+reload(cat /tmp/ytsearch-titles)')
 : | fzf ${fzf_options[@]}
 
-rm /tmp/ytsearch.fifo /tmp/ytsearch-search_data.json /tmp/ytsearch-titles
+rm /tmp/ytsearch-search_data.json /tmp/ytsearch-titles
