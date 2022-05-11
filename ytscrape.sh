@@ -23,7 +23,7 @@ parse_json () {
   .itemSectionRenderer
   .contents[]
   .videoRenderer | {
-    url: .navigationEndpoint.commandMetadata.webCommandMetadata.url,
+    url: .navigationEndpoint.commandMetadata.webCommandMetadata.url | \"https://youtube.com\(.)\",
     title: .title.runs[0].text
     | select( . != null )
   }
