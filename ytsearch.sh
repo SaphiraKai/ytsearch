@@ -10,6 +10,8 @@ get_output () {
 	[ $output = title_url ] && {
 		cat /tmp/ytsearch-search_data.json | \
 		jq -r ".[] | select(.title == \"$title\") | "'"\"\(.title)\" \"\(.url)\""'
+	} || [ $output = open ] && {
+		xdg-open $(cat /tmp/ytsearch-search_data.json | jq -r ".[] | select(.title == \"$title\").url")
 	} || {
 		cat /tmp/ytsearch-search_data.json | \
 		jq -r ".[] | select(.title == \"$title\").$output"
@@ -53,6 +55,7 @@ get_unique_results () {
 
 case "${1:--t}" in
 	-b|--title-url) output=title_url;;
+	-o|--open)      output=open;;
 	-t|--title)     output=title;;
 	-u|--url)       output=url;;
 
