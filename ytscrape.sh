@@ -27,7 +27,7 @@ parse_json () {
     title: .title.runs[0].text,
     views: .viewCountText.simpleText | rtrimstr(\" views\") | split(\",\") | join(\"\") | tonumber
   }
-] | sort_by(.views) | reverse
+]
 "
 }
 
