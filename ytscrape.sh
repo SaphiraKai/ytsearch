@@ -22,12 +22,13 @@ parse_json () {
   .contents[0]
   .itemSectionRenderer
   .contents[]
-  .videoRenderer | {
+  .videoRenderer | select( . != null ) | {
     url: .navigationEndpoint.commandMetadata.webCommandMetadata.url | \"https://youtube.com\(.)\",
-    title: .title.runs[0].text
-    | select( . != null )
+    title: .title.runs[0].text,
+    views: .viewCountText.simpleText | rtrimstr(\" views\") | split(\",\") | join(\"\") | tonumber
   }
-]"
+] | sort_by(.views) | reverse
+"
 }
 
 url="https://www.youtube.com/results?&search_query=$encoded&max_results=20"
