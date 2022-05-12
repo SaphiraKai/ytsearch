@@ -18,7 +18,7 @@ If no OPTION, assume --url\
 "
 
 set -euo pipefail
-IFS=$'\t\n'
+IFS=$'\n'
 
 get_output () {
 	output=$1
@@ -50,7 +50,8 @@ new_query () {
 }
 
 update_search () {
-	cat /tmp/ytsearch-search_data.json | jq -r '.[].title' > /tmp/ytsearch-titles
+	cat /tmp/ytsearch-search_data.json | jq -r '.[] | "\(.views)	\(.title)"' \
+	> /tmp/ytsearch-titles
 }
 
 get_unique_results () {
@@ -90,8 +91,10 @@ esac
 touch /tmp/ytsearch-titles
 
 fzf_options=('--reverse'
+             '--no-sort'
              '--prompt' 'youtube search: '
              '--bind' 'change:execute-silent(ytsearch new_query {q} &)'
+             '--bind' 'change:+reload(cat /tmp/ytsearch-titles | sort -rg)'
              '--bind' 'enter:execute(echo {} > /tmp/ytsearch-selected)'
              '--bind' 'enter:+abort')
 
@@ -101,7 +104,8 @@ fzf_pid=$!
 
 while ps -p $fzf_pid >/dev/null; do sleep 0.1; done
 
-selected="$(cat /tmp/ytsearch-selected 2>/dev/null || exit)"
+[ -s /tmp/ytsearch-selected ] || { rm /tmp/ytsearch-*; exit; }
+selected="$(cat /tmp/ytsearch-selected | sed 's/[0-9]*\t//')"
 get_output $output "$selected"
 
 rm -f /tmp/ytsearch-*
