@@ -95,8 +95,8 @@ As stated previously, be careful about how you use **ytscrape**. Issuing too man
 
 ## Tips and tricks
 #### Download selected video using yt-dlp
-```bash 
-yt-dlp "ytsearch:`ytsearch`"
+```bash
+yt-dlp "`yts -u`"
 ```
 
 #### Sort by views
