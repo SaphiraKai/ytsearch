@@ -37,16 +37,20 @@ sudo ./install.sh
 ```
 
 ## Usage
-Installing **ytsearch** will create two files:
+Installing **ytsearch** will create three files:
 ```
+/usr/bin/yts
 /usr/bin/ytsearch
 /usr/bin/ytscrape
 ```
 
+#### yts
+`yts` is a short alias for **ytsearch**. It sets the `--open` flag by default.
+
 #### ytsearch
 `ytsearch` is the user-friendly frontend that allows you to interactively search YouTube for a video.
 
-If all you want to do is play a video directly, `ytsearch -o` will do that for you!
+If all you want to do is play a video directly, `ytsearch -o` (or simply `yts`) will do that for you!
 ```
 -t, --title             return title of selected video
 -u, --url               return url of selected video

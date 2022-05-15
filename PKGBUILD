@@ -21,9 +21,10 @@ install=
 changelog=
 source=('ytscrape.sh'
         'ytsearch.sh'
+        'yts.sh'
         'install.sh')
 noextract=()
-sha256sums=('SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 validpgpkeys=('2916041854F0C0C2786846345B407F5B67CAAA85')
 
 pkgver() {
