@@ -88,3 +88,14 @@ The output consists of a simple list of each object.
 The results are not sorted, so the first object in the list is the same as the first result searching YouTube normally.
 
 As stated previously, be careful about how you use **ytscrape**. Issuing too many requests, issuing requests for illegal content, or doing anything else that Google doesn't like will have consequences that I will not be liable for!
+
+## Tips and tricks
+#### Download selected video using yt-dlp
+```bash 
+yt-dlp "ytsearch:`ytsearch`"
+```
+
+#### Sort by views
+```bash
+search_text='some text to search for'
+ytscrape $search_text | jq "[.[] | select(.title|test(\"virtual riot\"; \"i\"))] | sort_by(.views) | reverse"
