@@ -65,7 +65,8 @@ For each result, **ytscrape** will create a JSON object in the form:
 ```json
 {
   "url",
-  "title"
+  "title",
+  views
 }
 ```
 
@@ -74,13 +75,16 @@ The output consists of a simple list of each object.
 [
   {
     "url": "https://youtube.com/watch?v=ayoutubevideourl",
-    "title": "A YouTube video title"
+    "title": "A YouTube video title",
+    "views": 45788
   },
   {
     "url": "https://youtube.com/watch?v=anotheryoutubevideourl",
-    "title": "Another YouTube video title"
+    "title": "Another YouTube video title",
+    "views": 6849
   }
 ]
 ```
+The results are not sorted, so the first object in the list is the same as the first result searching YouTube normally.
 
 As stated previously, be careful about how you use **ytscrape**. Issuing too many requests, issuing requests for illegal content, or doing anything else that Google doesn't like will have consequences that I will not be liable for!
