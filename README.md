@@ -66,7 +66,7 @@ For each result, **ytscrape** will create a JSON object in the form:
 {
   "url",
   "title",
-  views
+  "views"
 }
 ```
 
